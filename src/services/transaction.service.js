@@ -23,21 +23,9 @@ async function createTransaction({ paymentId, type, cardDetails }) {
     transaction.status = response.success ? 'processed' : 'failed';
     await transaction.save();
 
-    await publishEvent('transaction.created', transaction);
+    const topic = response.success ? 'transaction.success' : 'transaction.failed';
 
-    if (response.success) {
-        await publishEvent('transaction.processed', {
-            paymentId: transaction.paymentId,
-            transactionId: transaction.id,
-            status: 'processed',
-        });
-    } else {
-        await publishEvent('transaction.failed', {
-            paymentId: transaction.paymentId,
-            transactionId: transaction.id,
-            status: 'failed',
-        });
-    }
+    await publishEvent(topic, transaction);
 
     return transaction;
 }
