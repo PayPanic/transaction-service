@@ -1,0 +1,25 @@
+version: '3.9'
+
+services:
+  transaction-service:
+    build: .
+    container_name: transaction-service
+    ports:
+      - "5001:4100"
+      - "9232:9232"
+    environment:
+      PORT: 4100
+      DB_HOST: shared-postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASS: postgres
+      DB_NAME: main
+      KAFKA_BROKER: kafka:9092
+      ENCRYPTION_SECRET: "super_secure_secret"
+    networks:
+      - shared-infra
+    entrypoint: ["/bin/sh", "-c", "sleep 10 && node src/app.js"]
+
+networks:
+  shared-infra:
+    external: true
